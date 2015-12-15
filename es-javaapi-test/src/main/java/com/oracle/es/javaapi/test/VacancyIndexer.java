@@ -1,9 +1,9 @@
 package com.oracle.es.javaapi.test;
 
-public class VacancyIndexer implements Indexer<Vacancy> {
+public class VacancyIndexer implements Indexer<Tweet> {
 
     @Override
-    public boolean indexDocument(Vacancy document) {
+    public boolean indexDocument(Tweet document) {
 	// TODO Auto-generated method stub
 	return false;
     }
@@ -21,7 +21,7 @@ public class VacancyIndexer implements Indexer<Vacancy> {
     }
 
     @Override
-    public boolean deleteDocument(Vacancy document) {
+    public boolean deleteDocument(Tweet document) {
 	// TODO Auto-generated method stub
 	return false;
     }

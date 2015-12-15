@@ -17,9 +17,12 @@ import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import org.elasticsearch.index.get.GetField;
+import org.elasticsearch.index.query.QueryBuilders;
 
 /**
  * Elasticsearch demo application.
@@ -33,22 +36,24 @@ public class ElasticsearchDemoApp {
 	new ElasticsearchDemoApp().indexDocument();
 	new ElasticsearchDemoApp().getDocument();
 //	new ElasticsearchDemoApp().deleteDocument();
+	new ElasticsearchDemoApp().searchForDocument();
     }
 
-    private final ESClient esClient = new ESTransportClient();
+    private final ESClient esClient = new ESLocalNodeClient();
 
     private void indexDocument() {
-	final Vacancy vacancy = new Vacancy();
-	vacancy.setTitle("Software developer");
-	vacancy.setDescription("A well-known company is looking for an experienced Java developer.");
+	final Tweet tweet = new Tweet();
+	tweet.setUser("kimchy");
+	tweet.setPostDate(new Date());
+	tweet.setMessage("trying out Elasticsearch");
 
-        byte[] vacancyJson = null;
+        byte[] tweetJson = null;
         try {
              // instance a json mapper
             ObjectMapper mapper = new ObjectMapper(); // create once, reuse
             
             // generate json
-            vacancyJson = mapper.writeValueAsBytes(vacancy);
+            tweetJson = mapper.writeValueAsBytes(tweet);
      
             IndexRequestBuilder irb = esClient.getClient().prepareIndex("twitter", "tweet", "2");
             
@@ -60,7 +65,7 @@ public class ElasticsearchDemoApp {
 //                    .endObject()
 //                  );
             
-            irb.setSource(vacancyJson);
+            irb.setSource(tweetJson);
 
             IndexResponse ir = irb.get();
         
@@ -98,4 +103,20 @@ public class ElasticsearchDemoApp {
         System.out.println(outString);        
     }
     
+    private void searchForDocument() {
+            SearchResponse response = esClient.getClient().prepareSearch().execute().actionGet();
+//            SearchResponse response = esClient.getClient().prepareSearch("twitter")
+//                .setTypes("tweet")
+//                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+//                .setQuery(QueryBuilders.termQuery("multi", "test"))                 // Query
+//                .setPostFilter(QueryBuilders.rangeQuery("age").from(12).to(18))     // Filter
+//                .setFrom(0).setSize(60).setExplain(true)
+//                .execute()
+//                .actionGet();    
+        
+            String outString = String.format("totalHits(): = %s", response.getHits().totalHits());
+            System.out.println(outString);        
+    
+    }
+
 }
